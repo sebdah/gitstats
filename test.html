@@ -1,0 +1,165 @@
+<html>
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Sans+Mono|Droid+Serif:400,700|Nobile:400,700' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+    body {
+        margin: 0;
+        height: 100%;
+        font-family: 'Droid Sans';
+    }
+    a:active,
+    a:link,
+    a:visited {
+        font-family: 'Nobile';
+        background: #E4EDEF;
+        color: #1B5E73;
+        padding: 1px;
+        border-bottom: solid thin #1B5E73;
+        text-decoration: none;
+    }
+    a:hover, a:focus {
+        font-family: 'Nobile';
+        background: #E4EDEF;
+        color: #1B5E73;
+        padding: 1px;
+        border-bottom: none;
+        text-decoration: none;
+    }
+    h1 {
+        font-family: 'Nobile';
+        background: #E4EDEF;
+        color: #1B5E73;
+        padding-top: 3px;
+        padding-left: 3px;
+        padding-right: 3px;
+        padding-bottom: 0px;
+        border-bottom: solid thin #1B5E73;
+    }
+    th {
+        text-align: left;
+    }
+    textarea {
+        height: 120px;
+        width: 400px;
+    }
+    div#header-container {
+        height: 8%;
+        background: #f9f9f9;
+        color: #1B5E73;
+        border-bottom: solid thin #E4EDEF;
+        position: relative;
+    }
+    div#header {
+        padding: 10px;
+        margin-left: 30%;
+        margin-right: 30%;
+        
+        position: absolute;
+        bottom: 0;
+        right: 0;
+    }
+    div#header ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+    div#header li {
+        display: inline;
+        margin-right: 4px;
+    }
+    div#header a:link, a:visited, a:active {
+        font-family: 'Nobile';
+        background: transparent;
+        color: #1B5E73;
+        padding: 3px;
+        border-bottom: none;
+        text-decoration: none;
+    }
+    div#header a:hover, a:focus {
+        font-family: 'Nobile';
+        background: #E4EDEF;
+        color: #1B5E73;
+        padding: 3px;
+        border-bottom: solid thin #1B5E73;
+        text-decoration: none;
+    }
+    div#content-container {
+        height: 84%;
+    }
+    div#content {
+        height: 100%;
+        background: #ffffff;
+        padding: 10px;
+        margin-left: 30%;
+        margin-right: 30%;
+    }
+    
+    div#footer-container {
+        height: 8%;
+        background: #f9f9f9;
+        color: #1B5E73;
+        border-top: solid thin #E4EDEF;
+    }
+    div#footer {
+        padding: 10px;
+        margin-left: 30%;
+        margin-right: 30%;
+    }
+    </style>
+</head>
+<body>
+    <div id='header-container'>
+        <div id='header'>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Order script</a></li>
+                <li><a href="#">Pricing</a></li>
+                <li><a href="#">About us</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id='content-container'>
+        <div id='content'>
+            <h1>Order script</h1>
+            <p>
+                We are offering a scripting service, where you can outsource the development of 
+                scripts to us. Have a look at our <a href='#'>Python</a> page.
+            </p>
+            <p>
+                <table border='0'>
+                    <tr>
+                        <th>Language</th>
+                        <td>
+                            <select name='language'>
+                                <option selected='selected'>Please, choose for me</option>
+                                <option>Python 2.7</option>
+                                <option>BASH (Linux and Mac OS X only)</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Operating system</th>
+                        <td>
+                            <input type='checkbox' name='operating-system' value='linux'>Linux<br />
+                            <input type='checkbox' name='operating-system' value='macosx'>Mac OS X<br />
+                            <input type='checkbox' name='operating-system' value='windows7'>Windows 7<br />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Describe what you want<br />the application to do</th>
+                        <td>
+                            <textarea name='about'></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="footer-container">
+        <div id="footer">
+            My footer
+        </div>
+    </div>
+</body>
+</html>
