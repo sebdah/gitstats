@@ -4,30 +4,9 @@
 Script for parsing git repos
 """
 
-########################################
-#
-#       SETTINGS
-#
-########################################
-
-# Branch to use
-BRANCH = 'master'
-
-# Repo name
-# Used to identify the database
-REPO_NAME = 'avail'
-
-# Path to git repository
-REPO_PATH = '/Users/sebastian/git/avail'
-
-########################################
-#
-#       CODE
-#
-########################################
-
 import sys
 import datetime
+import optparse
 
 try:
     import git
@@ -46,29 +25,67 @@ Please install it using "sudo pip install pymongo"
 """
     sys.exit(1)
 
-# Get git repo
-REPO = git.Repo(REPO_PATH)
 
-# Make sure the repo exists since before
-assert REPO.bare == False
+def main():
+    """
+    Main function
+    """
+    parser = optparse.OptionParser(conflict_handler="resolve", 
+            description="Parsing git repositories and inserting data to MongoDB")
+    parser.add_option('-r', '--repository', action='store', type='string', 
+            dest='repository', default='', help='Path to repository')
+    parser.add_option('-b', '--branch', action='store', type='string', 
+            dest='branch', default='master', help='Branch to parse (default: master)')
+    options, _ = parser.parse_args()
+
+    if options.repository == '':
+        print 'Error: --repository must be set'
+        sys.exit(1)
+
+    # Remove any trailing slashes
+    if options.repository[len(options.repository) - 1] == '/':
+        options.repository = options.repository[:len(options.repository) - 1]
+    
+    # Get the repo name
+    repo_name = options.repository.split('/')
+    repo_name = repo_name[len(repo_name) - 1]
+
+    # Initialize the repository
+    repo = git.Repo(options.repository)
+
+    # Make sure the repo exists since before
+    try:
+        assert repo.bare == False
+    except AssertionError:
+        print '%s is not a valid git repo' % options.repository
+        sys.exit(1)
+
+    # Connect to MongoDB
+    try:
+        connection = pymongo.Connection()
+    except pymongo.errors.ConnectionFailure:
+        print 'Failed to connect to MongoDB'
+        sys.exit(1)
+    else:
+        database = connection['gitstats_%s' % repo_name]
+
+    # Start by populating the commits collection
+    print 'Populating MongoDB with repository data'
+    populate_mongodb(database, repo, options.branch)
 
 
-def full_parse():
+def populate_mongodb(database, repo, branch):
     """
     Parse full repo and insert into MongoDB
     """
-    # Connect to MongoDB
-    connection = pymongo.Connection()
-    db = connection['gitstats_%s' % REPO_NAME]
-
     # Initate the collections
-    collection_commits = db['%s_commits' % BRANCH]
+    collection_commits = database['%s_commits' % branch]
 
     # Parsed commits
     parsed_commits = 0
     previously_parsed = 0
 
-    for commit in REPO.iter_commits(BRANCH):
+    for commit in repo.iter_commits(branch):
         cursor = collection_commits.find({'_id': commit.hexsha})
         if cursor.count() == 0:
             # Get and generalize the timestamp
@@ -101,9 +118,9 @@ def full_parse():
     print """
 Done parsing commits!
 %i commits parsed of which %i \
-has been parsed before""" % (parsed_commits, previously_parsed)
+has been parsed before and was ignored""" % (parsed_commits, previously_parsed)
 
 if __name__ == "__main__":
-    full_parse()
+    main()
 
 sys.exit(0)
