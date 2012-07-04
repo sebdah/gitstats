@@ -3,12 +3,27 @@ var mongo = require('mongodb'),
 	Db = mongo.Db;
 
 var server = new Server('localhost', 27017, {auto_reconnect: true});
-var db = new Db('gitstats_avail', server);
+var db = new Db('gitstats_saas', server);
 
-function start() {
+function start(response) {
 	console.log("Request handler start was called");
 
-	content = '';
+	content = '<h1>All time commits</h1>\n';
+
+	function parse_result(err, results, stats) {
+		if (err != null) console.log(err);
+		console.log("MapReduce job ran in " + stats.processtime + " ms");
+		
+		results.forEach(function(result){
+			content = content + result['_id'] + " (" + result['value']['commits'] + ")" + "<br />";
+		});
+
+		response.writeHead(200, {"Content-Type": "text/html"});
+	  response.write(content);
+	  response.end();
+
+		db.close();
+	}
 
 	db.open(function(err, db) {
 		if (!err) {
@@ -29,24 +44,14 @@ function start() {
 					map,
 					reduce,
 					{
-						out: {replace : 'test'},
+						out: {inline : 1},
 						verbose: true
 					},
-					function(err, results, stats){
-						console.log("MapReduce job ran in " + stats.processtime + " ms");
-
-						/*for (var i = results.length - 1; i >= 0; i--) {
-							content = content + "\n" + results[i]['_id'] + "(" + results[i]['value']['commits'] + ")<br />";
-						};*/
-
-						db.close();
-					}
+					parse_result
 				);
 			});
 		}
 	});
-	console.log('Content: ' + content);
-	return content;
 }
 
 exports.start = start;
