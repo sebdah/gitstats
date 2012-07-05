@@ -7,6 +7,7 @@ Script for parsing git repos
 import sys
 import datetime
 import optparse
+from bson.code import Code
 
 try:
     import git
@@ -30,11 +31,11 @@ def main():
     """
     Main function
     """
-    parser = optparse.OptionParser(conflict_handler="resolve", 
+    parser = optparse.OptionParser(conflict_handler="resolve",
             description="Parsing git repositories and inserting data to MongoDB")
-    parser.add_option('-r', '--repository', action='store', type='string', 
+    parser.add_option('-r', '--repository', action='store', type='string',
             dest='repository', default='', help='Path to repository')
-    parser.add_option('-b', '--branch', action='store', type='string', 
+    parser.add_option('-b', '--branch', action='store', type='string',
             dest='branch', default='master', help='Branch to parse (default: master)')
     options, _ = parser.parse_args()
 
@@ -45,7 +46,7 @@ def main():
     # Remove any trailing slashes
     if options.repository[len(options.repository) - 1] == '/':
         options.repository = options.repository[:len(options.repository) - 1]
-    
+
     # Get the repo name
     repo_name = options.repository.split('/')
     repo_name = repo_name[len(repo_name) - 1]
@@ -72,6 +73,7 @@ def main():
     # Start by populating the commits collection
     print 'Populating MongoDB with repository data'
     populate_mongodb(database, repo, options.branch)
+    map_reduce_all_time_high(database, repo, options.branch)
 
 
 def populate_mongodb(database, repo, branch):
@@ -119,6 +121,32 @@ def populate_mongodb(database, repo, branch):
 Done parsing commits!
 %i commits parsed of which %i \
 has been parsed before and was ignored""" % (parsed_commits, previously_parsed)
+
+
+def map_reduce_all_time_high(database, repo, branch):
+    """
+    Make a map reduce to create the all time high top list
+    """
+    # Mapping function
+    mapper = Code("""
+        function() {
+            emit(this.author_email, {commits: 1});
+        };
+        """)
+
+    # Reducer function
+    reducer = Code("""
+        function(key, values) {
+            var sum = 0;
+            values.forEach(function(doc) {
+                sum += doc.commits;
+            });
+            return {commits: sum};
+        };
+        """)
+
+    collection_commits = database['%s_commits' % branch]
+    collection_commits.map_reduce(mapper, reducer, '%s_mr_all_time_high' % branch)
 
 if __name__ == "__main__":
     main()
