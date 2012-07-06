@@ -11,7 +11,7 @@ function start(response) {
 	content = '<h1>All time commits</h1>\n';
 
 	function parse_result(err, results, stats) {
-		if (err != null) console.log(err);
+		if (err !== null) console.log(err);
 		console.log("MapReduce job ran in " + stats.processtime + " ms");
 		
 		results.forEach(function(result){
@@ -19,8 +19,8 @@ function start(response) {
 		});
 
 		response.writeHead(200, {"Content-Type": "text/html"});
-	  response.write(content);
-	  response.end();
+		response.write(content);
+		response.end();
 
 		db.close();
 	}
@@ -28,7 +28,7 @@ function start(response) {
 	db.open(function(err, db) {
 		if (!err) {
 			db.collection('master_commits', function(err, collection) {
-				var map = function() {
+				/*var map = function() {
 					emit(this.author_email, {commits: 1});
 				};
 
@@ -48,7 +48,13 @@ function start(response) {
 						verbose: true
 					},
 					parse_result
-				);
+				);*/
+				collection.find().toArray(function(err, docs){
+					console.log(docs);
+					response.writeHead(200, {"Content-Type": "text/html"});
+					response.write("docs");
+					response.end();
+				});
 			});
 		}
 	});
