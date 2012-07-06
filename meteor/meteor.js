@@ -6,10 +6,6 @@ if (Meteor.is_client) {
     return Commits.find({}, {sort: {authored_date: -1}});
   };
 
-  Template.all_time_committers.commits = function () {
-    return AllTimeCommitters.find({}, {sort: {commits: 1}});
-  };
-
   Template.latest_commits.selected = function () {
     return Session.equals("selected_commit", this._id) ? "selected" : "";
   };
@@ -23,6 +19,10 @@ if (Meteor.is_client) {
       }
       
     }
+  };
+
+  Template.all_time_committers.commits = function () {
+    return AllTimeCommitters.find({}, {sort: {commits: 1}});
   };
 }
 
