@@ -25,7 +25,7 @@
 
 <template name="latest_commits">
   <div id="latest_commits">
-    <h1>Lastest commits in git</h1>
+    <h1>Latest commits in git</h1>
     {{#each commits}}
       <div id="commit" class="commit {{selected}}">
         <span id="commit_header" class="{{selected}}">{{committed_date}} - {{committer_name}}</span>
@@ -57,8 +57,8 @@
       </tr>
       {{#each commits}}
         <tr>
-          <td>{{num}}</td>
-          <td>{{committer_name}}</td>
+          <td>{{value.commits}}</td>
+          <td>{{_id}}</td>
         </tr>
       {{/each}}
     </table>

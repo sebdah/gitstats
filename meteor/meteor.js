@@ -1,9 +1,9 @@
-Commits = new Meteor.Collection("commits");
+Commits = new Meteor.Collection("commits_small");
 AllTimeCommitters = new Meteor.Collection("all_time_committers");
 
 if (Meteor.is_client) {
   Template.latest_commits.commits = function () {
-    return Commits.find({}, {sort: {authored_date: -1}});
+    return Commits.find({}, {sort: {committed_date: -1}});
   };
 
   Template.latest_commits.selected = function () {
@@ -17,12 +17,11 @@ if (Meteor.is_client) {
       } else {
         Session.set('selected_commit', this._id);
       }
-      
     }
   };
 
   Template.all_time_committers.commits = function () {
-    return AllTimeCommitters.find({}, {sort: {commits: 1}});
+    return AllTimeCommitters.find({}, {sort: {value: -1}});
   };
 }
 
